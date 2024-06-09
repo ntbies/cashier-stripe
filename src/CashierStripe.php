@@ -18,12 +18,12 @@ class CashierStripe
      */
     public static function findPartner(null|string|StripeAccount $stripeAccountId){
         $accountId = $stripeAccountId instanceof StripeAccount ? $stripeAccountId->id : $stripeAccountId;
-        $model = static::$partnerModel;
+        $model = static::getPartnerModel();
         $builder = in_array(SoftDeletes::class, class_uses_recursive($model))
             ? $model::withTrashed()
             : new $model;
 
-        return $accountId ? $builder->where('stripe_account_id', $accountId) : null;
+        return $accountId ? $builder->where('stripe_account_id', $accountId)->first() : null;
     }
 
     /**
