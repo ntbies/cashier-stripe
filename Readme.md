@@ -93,11 +93,11 @@ The partner model must implement the `IsPartner` interface and use the `Partner`
 namespace App\Models;
 
 use Ntbies\CashierStripe\Contracts\IsPartner;
-use Ntbies\CashierStripe\Concerns\Partner;
+use Ntbies\CashierStripe\Concerns\Partner as PartnerTrait;
 
 class Partner extends Model implements IsPartner
 {
-    use Partner;
+    use PartnerTrait;
 
     // Your model code here
 }
