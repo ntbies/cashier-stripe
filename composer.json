@@ -1,0 +1,33 @@
+{
+    "name": "ntbies/cashier-stripe",
+    "description": "Ntbies Cashier Stripe Account uses the power of Laravel Cashier and Stripe to bring to life what misses to implement a market place with Stripe Accounts and Stripe interfaces",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ntbies\\CashierStripe\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Gerry Ntabuhashe",
+            "email": "gerry@ntbies.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ntbies\\CashierStripe\\CashierStripeServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "laravel/cashier": "^15.0",
+        "mpociot/vat-calculator": "^3.9"
+    }
+}
