@@ -13,6 +13,7 @@
 - **Hosted Onboarding**: Easily access Stripe's hosted onboarding page.
 - **Hosted Dashboard**: Direct access to the Stripe dashboard for connected accounts.
 - **Webhook Support**: Integration with Stripe webhooks for real-time event handling.
+- **Event Dispatching**: Events dispatched on `paymentIntent` success for both standard and connect account payments and `checkout.session.completed`.
 
 ## Installation
 
@@ -128,6 +129,88 @@ The connected webhook is available at the following route:
 
 Make sure to configure your Stripe account to send connected webhooks to this endpoint. You can set the webhook signing secret in the configuration file to verify incoming requests.
 
+## Event Dispatching
+
+This package dispatches two events on `paymentIntent` success to help you handle different payment scenarios:
+
+- **PaymentSucceeded**: Dispatched when the payment is not related to a connect account.
+- **ConnectPaymentSucceeded**: Dispatched when a connect account is involved in the payment.
+- **CheckoutSessionCompleted**: Dispatched when a `checkout.session.completed` webhook event is received.
+### Listening to Events
+
+To use these events in your Laravel application, you need to set up event listeners. Follow these steps:
+
+#### 1. Define Event Listeners
+
+Create event listener classes for handling the events.
+
+**Example for `PaymentSucceeded`**:
+
+```php
+namespace App\Listeners;
+
+use Ntbies\CashierStripe\Events\PaymentSucceeded;
+
+class HandlePaymentSucceeded
+{
+    public function handle(PaymentSucceeded $event)
+    {
+        // Handle the event, e.g., update order status, notify user, etc.
+        $paymentIntent = $event->paymentIntent;
+        // Your logic here
+    }
+}
+```
+
+**Example for `ConnectPaymentSucceeded`**:
+
+```php
+namespace App\Listeners;
+
+use Ntbies\CashierStripe\Events\ConnectPaymentSucceeded;
+
+class HandleConnectPaymentSucceeded
+{
+    public function handle(ConnectPaymentSucceeded $event)
+    {
+        $paymentIntent = $event->paymentIntent;
+        // Handle the logic regarding connected account here
+        // Bear in mind the difference between on_behalf_of and transfert_data
+    }
+}
+```
+
+#### 2. Register Event Listeners
+
+Register the event listeners in your `EventServiceProvider`.
+
+**Example `app/Providers/EventServiceProvider.php`**:
+
+```php
+namespace App\Providers;
+
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use Ntbies\CashierStripe\Events\PaymentSucceeded;
+use Ntbies\CashierStripe\Events\ConnectPaymentSucceeded;
+use App\Listeners\HandlePaymentSucceeded;
+use App\Listeners\HandleConnectPaymentSucceeded;
+
+class EventServiceProvider extends ServiceProvider
+{
+    protected $listen = [
+        PaymentSucceeded::class => [
+            HandlePaymentSucceeded::class,
+        ],
+        ConnectPaymentSucceeded::class => [
+            HandleConnectPaymentSucceeded::class,
+        ],
+    ];
+
+    // ...
+}
+```
+
 ## Customizations
 
 ### Billable Trait
@@ -148,4 +231,4 @@ This package is open-sourced software licensed under the [MIT license](LICENSE.m
 
 ---
 
-For further details, please refer to the official documentation or reach out via the issue tracker on GitHub.
+For further details, please refer to the official Stripe documentation or reach out via the issue tracker on GitHub.
