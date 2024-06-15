@@ -7,6 +7,10 @@
             "Ntbies\\CashierStripe\\": "src/"
         }
     },
+    "support": {
+        "issues": "https://github.com/ntbies/cashier-stripe/issues",
+        "source": "https://github.com/ntbies/cashier-stripe"
+    },
     "authors": [
         {
             "name": "Gerry Ntabuhashe",

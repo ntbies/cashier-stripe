@@ -3,6 +3,7 @@
 namespace Ntbies\CashierStripe\Contracts;
 
 use Stripe\Account;
+
 interface IsPartner
 {
     
@@ -51,7 +52,6 @@ interface IsPartner
      * @return string
      */
     public function stripeAccountCountry(): string;
-    
     
     
 }
