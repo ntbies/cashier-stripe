@@ -10,6 +10,8 @@ use Stripe\Exception\ApiErrorException;
 
 trait Partner
 {
+    protected Account|null $stripeAccountObject = null;
+    
     /**
      * Provides the account email address
      * @return string
@@ -43,8 +45,8 @@ trait Partner
             'country' => $this->country,
             'email' => $this->stripeAccountEmail(),
         ], config('cashier.account.options', [
-            'type' => 'express'
-        ]), $options ?? [], );
+            'type' => 'express',
+        ]), $options ?? [],);
         $account = Cashier::stripe()->accounts
             ->create($parameters);
         $this->stripe_account_id = $account->id;
@@ -117,9 +119,29 @@ trait Partner
         if (!$this->hasStripeAccount()) {
             throw InvalidAccount::notYetCreated($this);
         }
+        if (!$this->onboardingFinished()) {
+            return $this->stripeAccountLink();
+        }
         return Cashier::stripe()->accounts
             ->createLoginLink($this->stripeAccountId(), [])['url'];
     }
     
+    public function asStripeAccount(): ?Account
+    {
+        if (!$this->hasStripeAccount()) {
+            return null;
+        }
+        if (!empty($this->stripeAccountObject)) {
+            return $this->stripeAccountObject;
+        }
+        $this->stripeAccountObject = Cashier::stripe()->accounts->retrieve($this->stripeAccountId());
+        return $this->stripeAccountObject;
+    }
+    
+    public function onboardingFinished()
+    {
+        $account = $this->asStripeAccount();
+        return $account?->charges_enabled && $account->payouts_enabled;
+    }
     
 }
